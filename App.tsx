@@ -1,28 +1,51 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import { Alert, Button, StyleSheet, Text, View } from 'react-native';
+import React, { useEffect } from 'react';
+import {
+  NotificationListner,
+  requestPermission,
+} from './src/firbase/notification';
 
-import { NewAppScreen } from '@react-native/new-app-screen';
-import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
+import MessageHandler from './src/firbase/MessageHandler';
+import PushNotification from 'react-native-push-notification';
+import axios from 'axios';
+const App = () => {
+  useEffect(() => {
+    PushNotification.createChannel(
+      {
+        channelId: '1234',
+        channelName: 'Test Notification',
+      },
+      created => console.log('----> CHANNNEL CREATED', created),
+    );
+    requestPermission();
+    NotificationListner();
+  }, []);
 
-function App() {
-  const isDarkMode = useColorScheme() === 'dark';
-
+  async function generateNotification() {
+    try {
+      const url = 'http://192.168.1.35:8000/login';
+      const response = await axios.get<any, any>(url); // replace to post to send  token dynamically
+      console.log('=======>>', response);
+    } catch (error) {
+      console.log('====>', error);
+    }
+  }
   return (
-    <View style={styles.container}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <NewAppScreen templateFileName="App.tsx" />
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: '#fff',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
+      <MessageHandler />
+      <Text>App</Text>
+      <Button title="Click me" onPress={generateNotification} />
     </View>
   );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
+};
 
 export default App;
+
+const styles = StyleSheet.create({});
